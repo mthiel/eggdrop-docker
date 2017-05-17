@@ -6,7 +6,7 @@ RUN adduser -S eggdrop
 # grab su-exec for easy step-down from root
 RUN apk add --no-cache 'su-exec>=0.2'
 
-COPY ../megahal.mod ./
+COPY megahal.mod ./megahal.mod
 
 RUN apk add --no-cache tcl tcl-dev wget make tar gpgme bash build-base pcre-dev pcre \
   && wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.6/eggdrop1.6.21.tar.gz \
@@ -17,7 +17,6 @@ RUN apk add --no-cache tcl tcl-dev wget make tar gpgme bash build-base pcre-dev 
   && tar -zxvf eggdrop1.6.21.tar.gz \
   && mv megahal.mod eggdrop1.6.21/src/mod \
   && rm eggdrop1.6.21.tar.gz \
-  && rm megahal.tar.gz \
   && ( cd eggdrop1.6.21 \
     && CFLAGS="-std=gnu89" ./configure --with-tclinc=/usr/include/tcl.h --with-tcllib=/usr/lib/libtcl8.6.so \
     && make config \

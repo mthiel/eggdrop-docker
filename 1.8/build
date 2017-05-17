@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Start by copying the module down here because Docker is completely stupid and refuses to see things above this path.
+cp -R ../megahal.mod ./
+
+# Build the new image
+docker build -t "mthiel/eggdrop-docker" .
+
+# Clean up redundant module folder
+rm -R megahal.mod
