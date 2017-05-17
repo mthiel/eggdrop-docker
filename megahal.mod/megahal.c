@@ -644,7 +644,7 @@ static bool contains_botnick(char *text)
 
 	Context;
 
-	sprint(pattern, "\\b%s\\b", mbotnick);
+	sprintf(pattern, "\\b%s\\b", mbotnick);
 	regexp = pcre_compile(pattern, PCRE_CASELESS, &error, &erroffset, NULL);
 	if (!regexp) {
 		putlog(LOG_MISC, "*", "<ERROR> pcre_compile(): Error in pattern at %d: '%s'", erroffset, error);
@@ -676,7 +676,7 @@ static void clean_input(char *text)
 	regex_filter("^\\W+", text);
 	regex_filter(" +$", text);
 
-	sprint(pattern, "%s[^s]", mbotnick);
+	sprintf(pattern, "%s[^s]", mbotnick);
 	regex_filter(pattern, text); // Botnick scrubber
 
 	nfree(pattern);
