@@ -1,0 +1,1 @@
+sudo cp ../../../megahal.so /usr/lib/eggdrop/modules

@@ -1,18 +1,21 @@
 FROM alpine:3.4
-MAINTAINER Geo Van O <geo@eggheads.org>
+LABEL maintainer "Matthew Thiel <mthiel@me.com>"
 
 RUN adduser -S eggdrop
 
 # grab su-exec for easy step-down from root
 RUN apk add --no-cache 'su-exec>=0.2'
 
-RUN apk add --no-cache tcl tcl-dev wget ca-certificates make tar gpgme bash build-base openssl openssl-dev\
+COPY ../megahal.mod ./
+
+RUN apk add --no-cache tcl tcl-dev wget ca-certificates make tar gpgme bash build-base openssl openssl-dev pcre-dev pcre \
   && wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.8/eggdrop-1.8.1.tar.gz \
   && wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.8/eggdrop-1.8.1.tar.gz.asc \
   && gpg --keyserver ha.pool.sks-keyservers.net --recv-key E01C240484DE7DBE190FE141E7667DE1D1A39AFF \
   && gpg --batch --verify eggdrop-1.8.1.tar.gz.asc eggdrop-1.8.1.tar.gz \
   && rm eggdrop-1.8.1.tar.gz.asc \
   && tar -zxvf eggdrop-1.8.1.tar.gz \
+  && mv megahal.mod eggdrop-1.8.1/src/mod \
   && rm eggdrop-1.8.1.tar.gz \
   && ( cd eggdrop-1.8.1 \
     && ./configure \
@@ -22,7 +25,7 @@ RUN apk add --no-cache tcl tcl-dev wget ca-certificates make tar gpgme bash buil
   && rm -rf eggdrop-1.8.1 \
   && mkdir /home/eggdrop/eggdrop/data \
   && chown -R eggdrop /home/eggdrop/eggdrop \
-  && apk del tcl-dev wget ca-certificates make tar gpgme build-base openssl-dev
+  && apk del tcl-dev wget ca-certificates make tar gpgme build-base openssl-dev pcre-dev
 
 ENV NICK=""
 ENV SERVER=""

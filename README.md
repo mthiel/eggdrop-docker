@@ -1,2 +1,2 @@
-# eggdrop-docker
-This is the Git repo for the official Docker image of Eggdrop, the Internet's oldest IRC bot still under active development. For information on how to properly configure and use the image, please see the [official Egggdrop Docker Hub page](https://hub.docker.com/_/eggdrop/). 
+# eggdrop-megahal
+This is a fork of the official Docker image for Eggdrop that includes the Megahal module. Note that this is pinned to 1.6 only until compatibility can be improved.
