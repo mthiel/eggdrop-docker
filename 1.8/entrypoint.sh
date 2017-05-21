@@ -9,7 +9,7 @@ if [[ "$1" = *".conf" ]]; then
   # allow the container to be started with `--user`
   if [ "$(id -u)" = '0' ]; then
     chown -R eggdrop /home/eggdrop/eggdrop .
-    exec su-exec eggdrop "$BASH_SOURCE" "$@"
+    exec gosu eggdrop "$BASH_SOURCE" "$@"
   fi
 
   CONFIG=$1

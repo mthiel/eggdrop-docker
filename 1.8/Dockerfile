@@ -1,31 +1,31 @@
-FROM alpine:3.4
+FROM debian:8.8
 LABEL maintainer "Matthew Thiel <mthiel@me.com>"
 
-RUN adduser -S eggdrop
-
-# grab su-exec for easy step-down from root
-RUN apk add --no-cache 'su-exec>=0.2'
+RUN adduser --system eggdrop
 
 COPY megahal.mod ./megahal.mod
 
-RUN apk add --no-cache tcl tcl-dev wget ca-certificates make tar gpgme bash build-base openssl openssl-dev pcre-dev pcre \
-  && wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.8/eggdrop-1.8.1.tar.gz \
-  && wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.8/eggdrop-1.8.1.tar.gz.asc \
-  && gpg --keyserver ha.pool.sks-keyservers.net --recv-key E01C240484DE7DBE190FE141E7667DE1D1A39AFF \
-  && gpg --batch --verify eggdrop-1.8.1.tar.gz.asc eggdrop-1.8.1.tar.gz \
-  && rm eggdrop-1.8.1.tar.gz.asc \
+RUN echo deb http://ftp.debian.org/debian jessie-backports main >> /etc/apt/sources.list \
+  && apt-get update \
+  && apt-get -y -t jessie-backports install gosu \
+  && apt-get -y install tcl tcl-dev wget make tar build-essential libpcre3 libpcre3-dev \
+  && ldconfig
+
+RUN wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.8/eggdrop-1.8.1.tar.gz \
   && tar -zxvf eggdrop-1.8.1.tar.gz \
   && mv megahal.mod eggdrop-1.8.1/src/mod \
-  && rm eggdrop-1.8.1.tar.gz \
-  && ( cd eggdrop-1.8.1 \
+  && rm eggdrop-1.8.1.tar.gz
+
+RUN ( cd eggdrop-1.8.1 \
     && ./configure \
     && make config \
     && make \
-    && make install DEST=/home/eggdrop/eggdrop ) \
-  && rm -rf eggdrop-1.8.1 \
+    && make install DEST=/home/eggdrop/eggdrop )
+
+RUN rm -rf eggdrop-1.8.1 \
   && mkdir /home/eggdrop/eggdrop/data \
   && chown -R eggdrop /home/eggdrop/eggdrop \
-  && apk del tcl-dev wget ca-certificates make tar gpgme build-base openssl-dev pcre-dev
+  && apt-get -y remove tcl-dev wget make build-essential libpcre3-dev
 
 ENV NICK=""
 ENV SERVER=""

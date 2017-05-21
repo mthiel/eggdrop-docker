@@ -1,31 +1,31 @@
-FROM alpine:3.4
+FROM debian:8.8
 LABEL maintainer "Matthew Thiel <mthiel@me.com>"
 
-RUN adduser -S eggdrop
-
-# grab su-exec for easy step-down from root
-RUN apk add --no-cache 'su-exec>=0.2'
+RUN adduser --system eggdrop
 
 COPY megahal.mod ./megahal.mod
 
-RUN apk add --no-cache tcl tcl-dev wget make tar gpgme bash build-base pcre-dev pcre \
-  && wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.6/eggdrop1.6.21.tar.gz \
-  && wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.6/eggdrop1.6.21.tar.gz.asc \
-  && gpg --keyserver ha.pool.sks-keyservers.net --recv-key B0B3D92ABE1D20233A2ECB01DB909F5EE7C0E7F7 \
-  && gpg --batch --verify eggdrop1.6.21.tar.gz.asc eggdrop1.6.21.tar.gz \
-  && rm eggdrop1.6.21.tar.gz.asc \
+RUN echo deb http://ftp.debian.org/debian jessie-backports main >> /etc/apt/sources.list \
+  && apt-get update \
+  && apt-get -y -t jessie-backports install gosu \
+  && apt-get -y install tcl tcl-dev wget make tar build-essential libpcre3 libpcre3-dev \
+  && ldconfig
+
+RUN wget ftp://ftp.eggheads.org/pub/eggdrop/source/1.6/eggdrop1.6.21.tar.gz \
   && tar -zxvf eggdrop1.6.21.tar.gz \
   && mv megahal.mod eggdrop1.6.21/src/mod \
-  && rm eggdrop1.6.21.tar.gz \
-  && ( cd eggdrop1.6.21 \
-    && CFLAGS="-std=gnu89" ./configure --with-tclinc=/usr/include/tcl.h --with-tcllib=/usr/lib/libtcl8.6.so \
+  && rm eggdrop1.6.21.tar.gz
+
+RUN ( cd eggdrop1.6.21 \
+    && CFLAGS="-std=gnu89" ./configure --with-tclinc=/usr/include/tcl/tcl.h --with-tcllib=/usr/lib/x86_64-linux-gnu/libtcl8.6.so \
     && make config \
     && make \
-    && make install DEST=/home/eggdrop/eggdrop ) \
-  && rm -rf eggdrop1.6.21 \
+    && make install DEST=/home/eggdrop/eggdrop )
+
+RUN rm -rf eggdrop1.6.21 \
   && mkdir /home/eggdrop/eggdrop/data \
   && chown -R eggdrop /home/eggdrop/eggdrop \
-  && apk del tcl-dev wget make tar gpgme build-base pcre-dev
+  && apt-get -y remove tcl-dev wget make build-essential libpcre3-dev
 
 ENV NICK=""
 ENV SERVER=""

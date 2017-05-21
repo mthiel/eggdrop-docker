@@ -4,7 +4,7 @@
 cp -R ../megahal.mod ./
 
 # Build the new image
-docker build -t "mthiel/eggdrop-docker" .
+docker build -t "mthiel/eggdrop-docker:1.6.21" .
 
 # Clean up redundant module folder
 rm -R megahal.mod
